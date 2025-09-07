@@ -1,11 +1,9 @@
 'use client'
-import Link from 'next/link';
 import Sidebar from '../components/Sidebar';
 import ChatContainer from '../components/ChatContainer';
 import RightSidebar from '../components/RightSidebar';
-import { useSelector, useDispatch } from 'react-redux'; // <-- ADDED useDispatch HERE
-import { RootState, AppDispatch } from '../../../packages/store/store'; // <-- CORRECTED IMPORT PATH
-import { setSelectedUser} from '../../../packages/store/selectedUserSlice'; // <-- ADDED toggleSelectedUser HERE
+import { useSelector, useDispatch } from 'react-redux'; 
+import { RootState, AppDispatch } from '../../../packages/store/store'; 
 
 export default function RootPage() {
 
