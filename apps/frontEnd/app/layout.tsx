@@ -35,7 +35,9 @@ export default function RootLayout({
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
       <body>
         <div className="page bg-[url('/bgImage.svg')] bg-contain">
-          <Providers>{children}</Providers>
+          <Providers>
+            {children}
+          </Providers>
         </div>
       </body>
     </html>

@@ -24,9 +24,3 @@ export const UiSlice = createSlice({
 export const {toggleCurState, setCurState} = UiSlice.actions
 
 export default UiSlice.reducer
-
-
-
-
-
-

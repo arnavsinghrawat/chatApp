@@ -1,9 +1,9 @@
 'use client'
-import Sidebar from '../components/Sidebar';
-import ChatContainer from '../components/ChatContainer';
-import RightSidebar from '../components/RightSidebar';
+import Sidebar from 'components/Sidebar';
+import ChatContainer from 'components/ChatContainer';
+import RightSidebar from 'components/RightSidebar';
 import { useSelector, useDispatch } from 'react-redux'; 
-import { RootState, AppDispatch } from '../../../packages/store/store'; 
+import { RootState, AppDispatch } from 'store/store'; 
 
 export default function RootPage() {
 

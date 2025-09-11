@@ -3,9 +3,9 @@
 import React from 'react'
 import { useRouter } from 'next/navigation';
 import { useSelector, useDispatch } from 'react-redux'
-import { RootState } from '~/store/store'
+import { RootState } from 'store/store'
 import { userDummyData } from '../public/assets'
-import { setSelectedUser } from '~/store/selectedUserSlice';
+import { setSelectedUser } from 'store/selectedUserSlice';
 
 const Sidebar = () => {
 

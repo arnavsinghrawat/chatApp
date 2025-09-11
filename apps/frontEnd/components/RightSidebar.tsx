@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { RootState } from '../../../packages/store/store'
+import { RootState } from '../store/store'
 import { imagesDummyData } from 'public/assets'
 
 const RightSidebar = () => {

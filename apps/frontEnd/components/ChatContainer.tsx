@@ -2,9 +2,9 @@
 
 import React, { useEffect, useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { RootState } from '~/store/store'
+import { RootState } from 'store/store'
 import assets, { messagesDummyData } from 'public/assets'
-import { clearSelectedUser } from '~/store/selectedUserSlice'
+import { clearSelectedUser } from 'store/selectedUserSlice'
 import { formatMessageTime } from 'utils/helperFunctions'
 
 const ChatContainer = () => {
@@ -13,11 +13,6 @@ const ChatContainer = () => {
 
   const scrollEnd = useRef<HTMLDivElement | null>(null);
 
-  // useEffect(() => {
-  //   if (scrollEnd.current) {
-  //     scrollEnd.current.scrollIntoView({ behavior: "smooth" })
-  //   }
-  // }, [messagesDummyData])
 
   useEffect(() => {
     if (scrollEnd.current) {
