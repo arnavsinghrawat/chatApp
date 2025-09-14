@@ -5,14 +5,16 @@ import { JwtPayload } from "../types/type";
 
 export const protectRoute = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const token = req.headers.token;
+    const authHeader = req.headers.authorization;
 
-    if (!token) {
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return res.status(401).json({ success: false, message: "No token provided" });
     }
 
-    const decoded = jwt.verify(token.toString(), process.env.JWT_SECRET!) as JwtPayload;
-    
+    const token = authHeader.split(" ")[1]; // Extract the token part
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
+
     const user = await User.findById(decoded.userId).select("-password");
 
     if (!user) {
@@ -23,10 +25,10 @@ export const protectRoute = async (req: Request, res: Response, next: NextFuncti
 
     next();
   } catch (error: unknown) {
-
     if (error instanceof Error) {
       return res.status(500).json({ success: false, message: error.message });
     }
     return res.status(500).json({ success: false, message: "An unknown error occurred" });
   }
 };
+

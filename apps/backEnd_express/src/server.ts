@@ -52,6 +52,7 @@ export const io = new Server<ClientToServerEvents, ServerToClientEvents, InterSe
 io.on("connection", (socket: Socket<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>) => {
   const userId = socket.handshake.query.userId as string | undefined;
   console.log("User Connected", userId);
+  console.log("Socket room --> ",socket.rooms)
 
   if (userId) {
     userSocketMap[userId] = socket.id;
@@ -59,6 +60,10 @@ io.on("connection", (socket: Socket<ClientToServerEvents, ServerToClientEvents, 
   }
 
   io.emit("getOnlineUsers", Object.keys(userSocketMap));
+
+  socket.on("sendMessage", () => {
+    
+  })
 
   socket.on("disconnect", () => {
     console.log("User Disconnected", userId);
@@ -88,5 +93,5 @@ app.use('/api/messages', messageRouter);
 
 connectDB();
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT;
 server.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));

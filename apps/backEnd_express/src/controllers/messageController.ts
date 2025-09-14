@@ -43,7 +43,7 @@ export const getMessages = async (req: Request, res: Response) => {
             ]
         });
         await Message.updateMany({ senderId: selectedUserId, receiverId: myId }, { seen: true });
-
+        // console.log({ success: true, messages });
         res.status(200).json({ success: true, messages });
     } catch (error: unknown) {
         if (error instanceof Error) {
@@ -110,8 +110,14 @@ export const sendMessage = async (req: Request, res: Response) => {
             io.to(receiverSocketId).emit("newMessage", appropriateNewMessage!);
         }
 
-        res.status(500).json({ success: true, newMessage });
-    } catch (error) {
+        res.status(200).json({ success: true, newMessage });
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            return res.status(500).json({ success: false, message: error.message });
+        }
 
+        return res
+            .status(500)
+            .json({ success: false, message: "An unknown error occurred" });
     }
 }

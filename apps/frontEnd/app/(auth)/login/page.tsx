@@ -39,7 +39,7 @@ const LoginPage = () => {
         dispatch(setAuth({ token, user: userData }));
 
         localStorage.setItem("token", token);
-        localStorage.setItem("userData", userData);
+        localStorage.setItem("userData", JSON.stringify(userData));
 
         toast.success("Signup successful!");
         router.push('/');

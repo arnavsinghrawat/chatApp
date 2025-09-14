@@ -1,32 +1,25 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Socket } from "socket.io-client";
 
-interface SocketState {
-    socket: Socket | null;
-    onlineUsers: string[];
+export interface SocketState {
+  onlineUsers: string[];
 }
 
 const initialState: SocketState = {
-    socket: null,
-    onlineUsers: [],
+  onlineUsers: [],
 };
 
 const socketSlice = createSlice({
-    name: "socket",
-    initialState,
-    reducers: {
-        setSocket: (state, action: PayloadAction<Socket>) => {
-            return {
-                ...state,
-                socket: action.payload,
-            };
-        },
-        setOnlineUsers: (state, action: PayloadAction<string[]>) => {
-            state.onlineUsers = action.payload;
-        },
+  name: "socket",
+  initialState,
+  reducers: {
+    setOnlineUsers: (state, action: PayloadAction<string[]>) => {
+      state.onlineUsers = action.payload;
     },
+    clearSocket: (state) => {
+      state.onlineUsers = [];
+    },
+  },
 });
 
-export const setSocket: (payload: Socket) => PayloadAction<Socket> = socketSlice.actions.setSocket;
-export const setOnlineUsers: (payload: string[]) => PayloadAction<string[]> = socketSlice.actions.setOnlineUsers;
+export const { setOnlineUsers, clearSocket } = socketSlice.actions;
 export default socketSlice.reducer;

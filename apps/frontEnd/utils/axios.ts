@@ -2,12 +2,12 @@ import axios from "axios";
 
 
 export const publicApi = axios.create({
-    baseURL: process.env.BACKEND_URI || 'http://localhost:3001',
+    baseURL: (process.env.NEXT_PUBLIC_BACKEND_URI as string) || 'http://localhost:3001',
     headers: {"Content-Type": "application/json"},
 });
 
 export const privateApi = axios.create({
-    baseURL: process.env.BACKEND_URI,
+    baseURL: (process.env.NEXT_PUBLIC_BACKEND_URI as string) || 'http://localhost:3001',
     headers: {"Content-Type": "application/json"},
 });
 
