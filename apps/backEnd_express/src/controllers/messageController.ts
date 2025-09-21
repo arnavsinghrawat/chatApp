@@ -8,13 +8,16 @@ export const getUserForSideBar = async (req: Request, res: Response) => {
     try {
         const userId = req.user!._id;
 
+        // get all users except the logged-in one
         const filteredUsers = await User.find({ _id: { $ne: userId } }).select("-password");
 
+        // get unseen messages for this user
         const allUnseen = await Message.find({
             receiverId: userId,
             seen: false,
         }).select("senderId");
 
+        // unseen count by sender
         const unseenMessages: Record<string, number> = {};
         allUnseen.forEach((msg) => {
             const senderId = msg.senderId.toString();
@@ -26,10 +29,10 @@ export const getUserForSideBar = async (req: Request, res: Response) => {
         if (error instanceof Error) {
             return res.status(500).json({ success: false, message: error.message });
         }
-
         return res.status(500).json({ success: false, message: "An unknown error occurred" });
     }
 };
+
 
 export const getMessages = async (req: Request, res: Response) => {
     try {
@@ -43,7 +46,6 @@ export const getMessages = async (req: Request, res: Response) => {
             ]
         });
         await Message.updateMany({ senderId: selectedUserId, receiverId: myId }, { seen: true });
-        // console.log({ success: true, messages });
         res.status(200).json({ success: true, messages });
     } catch (error: unknown) {
         if (error instanceof Error) {
@@ -111,6 +113,32 @@ export const sendMessage = async (req: Request, res: Response) => {
         }
 
         res.status(200).json({ success: true, newMessage });
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            return res.status(500).json({ success: false, message: error.message });
+        }
+
+        return res
+            .status(500)
+            .json({ success: false, message: "An unknown error occurred" });
+    }
+}
+
+export const getSideContainerImageMessages = async (req: Request, res: Response) => {
+    try {
+        const { id: selectedUserId } = req.params;
+        const myId = req.user!._id;
+
+        const messages = await Message.find({
+            $or: [
+                { senderId: myId, receiverId: selectedUserId },
+                { senderId: selectedUserId, receiverId: myId }
+            ],
+            image: { $exists: true, $ne: null },  
+            seen: true                      
+        });
+
+        res.status(200).json({ success: true, messages });
     } catch (error: unknown) {
         if (error instanceof Error) {
             return res.status(500).json({ success: false, message: error.message });

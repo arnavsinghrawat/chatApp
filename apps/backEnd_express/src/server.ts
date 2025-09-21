@@ -38,13 +38,12 @@ interface SocketData {
   userId?: string;
 }
 
-// Map of userId → socketId
+
 export const userSocketMap: Record<string, string> = {};
 
-// Create server
 export const io = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>(server, {
   cors: {
-    origin: "*", // or restrict to your frontend URL
+    origin: "*",
     methods: ["GET", "POST"],
   },
 });
@@ -78,10 +77,10 @@ io.on("connection", (socket: Socket<ClientToServerEvents, ServerToClientEvents, 
 app.use(express.json({ limit: '4mb' }));
 
 app.use(cors({
-  origin: "http://localhost:3000",  // frontend URL
+  origin: "http://localhost:3000",
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true, // if you ever send cookies
+  credentials: true,
 }));
 
 app.use("/api/status", (req: Request, res: Response) => {

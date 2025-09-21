@@ -70,6 +70,10 @@ const ChatContainer = () => {
 
   const getMessages = async (receiverId: string) => {
     try {
+      if (!selectedUser?._id) {
+        toast.error("No user selected");
+        return;
+      }
       const res = await privateApi.get(`/api/messages/${receiverId}`);
       dispatch(setMessages(res.data.messages));
       toast.success("messages retrieved");
@@ -83,7 +87,7 @@ const ChatContainer = () => {
     if (scrollEnd.current) {
       scrollEnd.current.scrollIntoView({ behavior: "smooth" })
     }
-  }, [messagesDummyData])
+  }, [messages])
 
   useEffect(() => {
     const socket = getSocket()
@@ -140,7 +144,15 @@ const ChatContainer = () => {
                   'rounded-bl-none'}`}>{msg.text}</p>
             )}
             <div>
-              <img src={msg.senderId === '680f50e4f10f3cd28382ecf9' ? assets.avatar_icon.src : assets.profile_martin.src} alt="profile photo" className='w-7 rounded-full' />
+              <img
+                src={
+                  msg.senderId === authUser?._id
+                    ? authUser.profilePic || assets.avatar_icon.src
+                    : selectedUser?.profilePic || assets.avatar_icon.src
+                }
+                alt="profile photo"
+                className="w-7 rounded-full"
+              />
               <p className='text-gray-500'>{formatMessageTime(msg.createdAt)}</p>
             </div>
           </div>
@@ -152,9 +164,13 @@ const ChatContainer = () => {
       <div className='absolute bottom-0 left-0 right-0 flex items-center gap-3 p-3'>
         <div className='flex-1 flex items-center bg-gray-100/12 px-3 rounded-full'>
           <input type="text" placeholder="Send a message" onChange={handleUserMessageChange}
-
             value={userMessage}
-
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                handleSendMessage(e as any)
+              }
+            }}
             className='flex-1 text-sm p-3 border-none rounded-lg outline-none
                    text-white placeholder-gray-400/' />
           <input type="file" id="image" accept="image/png, image/jpeg" onChange={handleImageUpload} hidden />
@@ -162,10 +178,11 @@ const ChatContainer = () => {
             <img src={assets.gallery_icon.src} alt="" className="w-5 mr-2
                    cursor-pointer" />
           </label>
+          <button onClick={handleSendMessage}>
+            <img src={assets.send_button.src} alt="Send" className="w-7 cursor-pointer" />
+          </button>
         </div>
-        <button onClick={handleSendMessage}>
-          <img src={assets.send_button.src} alt="Send" className="w-7 cursor-pointer" />
-        </button>
+
       </div>
     </div>
   ) : (
