@@ -93,32 +93,59 @@ export const signup = async (req: Request, res: Response): Promise<Response> => 
 };
 
 //controller to check wheteher user is authenticated
-export const checkAuth = (req: Request, res: Response) => {
-    res.json({ success: true, user: req.user });
-}
+// export const checkAuth = (req: Request, res: Response) => {
+//     res.json({ success: true, user: req.user });
+// }
 
-//controller to update profile details
-export const updateProfile = async (req: Request, res: Response) => {
+export const checkAuth = async (req: Request, res: Response) => {
     try {
-        const { profilePic, bio, fullName } = req.body;
-        const userId = req.user?._id;
-        let updatedUser;
-
-        if (!profilePic) {
-            updatedUser = await User.findByIdAndUpdate(userId, { bio, fullName }, { new: true });
-        } else {
-            const upload = await cloudinary.uploader.upload(profilePic);
-            updatedUser = await User.findByIdAndUpdate(userId, { profilePic: upload.secure_url, bio, fullName }, { new: true });
+        const user = await User.findById(req.user?._id);
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
         }
 
-        return res.status(500).json({ succes: true, user: updatedUser });
+        res.json({ success: true, user });
     } catch (error: unknown) {
         if (error instanceof Error) {
             return res.status(500).json({ success: false, message: error.message });
         }
-
-        return res
-            .status(500)
-            .json({ success: false, message: "An unknown error occurred" });
+        res.status(500).json({ success: false, message: "An unknown error occurred" });
     }
 }
+
+export const updateProfile = async (req: Request, res: Response) => {
+    try {
+        const { fullName, bio } = req.body;
+        const userId = req.user?._id;
+
+        let profilePicUrl: string | undefined;
+        const updateData: any = { fullName, bio };
+
+        if (req.file) {
+            const profilePicUrl = await new Promise<string>((resolve, reject) => {
+                const stream = cloudinary.uploader.upload_stream(
+                    { folder: "profiles" },
+                    (error, result) => {
+                        if (error) return reject(error);
+                        resolve(result?.secure_url || "");
+                    }
+                );
+                stream.end(req!.file!.buffer);
+            });
+
+            updateData.profilePic = profilePicUrl;
+        }
+
+        
+        if (profilePicUrl) updateData.profilePic = profilePicUrl;
+
+        const updatedUser = await User.findByIdAndUpdate(userId, updateData, { new: true });
+
+        return res.status(200).json({ success: true, user: updatedUser });
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            return res.status(500).json({ success: false, message: error.message });
+        }
+        return res.status(500).json({ success: false, message: "An unknown error occurred" });
+    }
+};

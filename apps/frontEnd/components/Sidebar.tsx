@@ -43,7 +43,7 @@ const Sidebar = () => {
   const selectedUser = useSelector((state: RootState) => state.selectedUser.value);
   const onlineUsers = useSelector((state: RootState) => state.socket.onlineUsers);
 
-  const [allUsers, setAllUsers] = useState<IUser[]>(userDummyData);
+  const [allUsers, setAllUsers] = useState<IUser[]>([]);
   const [unseenMessages, dispatchUnseen] = useReducer(unseenReducer, {});
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -57,7 +57,6 @@ const Sidebar = () => {
         const unseen: Record<string, number> = res.data.unseenMessages || {};
 
         const mergedUsers = [
-          ...userDummyData,
           ...realUsers.filter(dbUser => !userDummyData.some(dummy => dummy._id === dbUser._id))
         ];
 

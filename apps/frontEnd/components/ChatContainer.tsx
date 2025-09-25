@@ -1,5 +1,6 @@
 'use client'
 
+import Image from "next/image";
 import React, { useEffect, useRef, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from 'store/store'
@@ -132,16 +133,22 @@ const ChatContainer = () => {
       {/* chat area */}
       <div className='flex-1 overflow-y-auto p-3 pb-15 transparent-scrollbar'>
         {messages.map((msg, index) => (
-          <div key={index} className={`flex items-end gap-2 justify-end ${msg.
-            senderId === authUser?._id && 'flex-row-reverse'}`}>
+          <div key={index} className={`flex items-end gap-2 justify-end ${msg.senderId === authUser?._id && 'flex-row-reverse'}`}>
             {msg.image ? (
-              <img src={typeof msg.image === "string" ? msg.image : msg.image.src} alt="" className='max-w-[230px] border 
-                         border-gray-700 rounded-lg overflow-hidden mb-8' />
+              <div className="max-w-[230px] mb-8 border border-gray-700 rounded-lg overflow-hidden">
+                <Image
+                  src={msg.image as string}
+                  alt="chat image"
+                  width={230}
+                  height={230}
+                  className="rounded-lg object-cover"
+                  priority={false} // lazy load
+                />
+              </div>
             ) : (
-              <p className={`p-2 max-w-[200px] md:text-sm font-light 
-                       rounded-lg mb-8 break-all bg-violet-500/30 text-white ${msg.
-                  senderId === '680f50e4f10f3cd28382ecf9' ? 'rounded-br-none' :
-                  'rounded-bl-none'}`}>{msg.text}</p>
+              <p className={`p-2 max-w-[200px] md:text-sm font-light rounded-lg mb-8 break-all bg-violet-500/30 text-white ${msg.senderId === '680f50e4f10f3cd28382ecf9' ? 'rounded-br-none' : 'rounded-bl-none'}`}>
+                {msg.text}
+              </p>
             )}
             <div>
               <img
