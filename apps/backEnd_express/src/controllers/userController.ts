@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import User from "../models/User";
-import { generateToken } from "../lib/utils";
+import { generateAccessToken, generateRefreshToken, generateToken } from "../lib/utils";
 import cloudinary from "../lib/cloudinary";
 import { profile } from "console";
+import jwt from "jsonwebtoken";
 
 export const login = async (req: Request, res: Response): Promise<Response> => {
     try {
@@ -25,12 +26,21 @@ export const login = async (req: Request, res: Response): Promise<Response> => {
                 .json({ success: false, message: "Invalid credentials" });
         }
 
-        const token = generateToken(userData._id.toString());
+        // const token = generateToken(userData._id.toString());
+        const token = generateAccessToken(userData._id.toString());
+        const refreshToken = generateRefreshToken(userData._id.toString());
+
+        res.cookie("refreshToken", refreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: "none",
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
 
         return res.json({
             success: true,
             userData,
-            token,
+            token: token, // "token" --> "accessToken"
             message: "Login Successful",
         });
     } catch (error: unknown) {
@@ -66,19 +76,29 @@ export const signup = async (req: Request, res: Response): Promise<Response> => 
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        const newUser = await User.create({
+        const userData = await User.create({
             fullName,
             email,
             password: hashedPassword,
             bio,
         });
 
-        const token = generateToken(newUser._id.toString());
+        // const token = generateToken(newUser._id.toString());
+        const token = generateAccessToken(userData._id.toString());
+        const refreshToken = generateRefreshToken(userData._id.toString());
+
+        res.cookie("refreshToken", refreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: "none",
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
+
 
         return res.status(201).json({
             success: true,
-            userData: newUser,
-            token,
+            userData: userData,
+            token: token,
             message: "Account created successfully",
         });
     } catch (error: unknown) {
@@ -136,7 +156,7 @@ export const updateProfile = async (req: Request, res: Response) => {
             updateData.profilePic = profilePicUrl;
         }
 
-        
+
         if (profilePicUrl) updateData.profilePic = profilePicUrl;
 
         const updatedUser = await User.findByIdAndUpdate(userId, updateData, { new: true });
@@ -147,5 +167,23 @@ export const updateProfile = async (req: Request, res: Response) => {
             return res.status(500).json({ success: false, message: error.message });
         }
         return res.status(500).json({ success: false, message: "An unknown error occurred" });
+    }
+};
+
+export const refreshFunction = async (req: Request, res: Response) => {
+    try {
+        const refreshToken = req.cookies.refreshToken;
+        if (!refreshToken) return res.status(401).json({ error: "No refresh token" });
+
+        const secret = process.env.REFRESH_SECRET!;
+
+        jwt.verify(refreshToken, secret, (err: any, payload: any) => {
+            if (err) return res.status(403).json({ error: "Invalid refresh token" });
+
+            const newAccessToken = generateAccessToken(payload.userId);
+            res.json({ accessToken: newAccessToken });
+        });
+    } catch (err) {
+        res.status(500).json({ error: "Something went wrong" });
     }
 };

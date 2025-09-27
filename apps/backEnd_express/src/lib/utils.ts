@@ -11,3 +11,27 @@ export const generateToken = (userId: string) => {
     
     return token;
 }
+
+export const generateAccessToken = (userId: string) => {
+    const secret = process.env.ACCESS_SECRET
+
+    if(!secret) {
+        throw new Error("ACCESS_SECRET is missing in the env")
+    }
+
+    const token = jwt.sign({userId}, secret, {expiresIn: "30m"})
+
+    return token;
+}
+
+export const generateRefreshToken = (userId: string) => {
+    const secret = process.env.REFRESH_SECRET
+
+    if(!secret) {
+        throw new Error("REFRESH_SECRET is missing in the env")
+    }
+
+    const token = jwt.sign({userId}, secret, {expiresIn: "7d"})
+
+    return token
+}

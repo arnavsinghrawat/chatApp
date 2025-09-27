@@ -6,18 +6,17 @@ import { userSocketMap, io, ServerToClientEvents } from "../server";
 
 export const getUserForSideBar = async (req: Request, res: Response) => {
     try {
+        console.log("req.user:", req.user);
         const userId = req.user!._id;
+        console.log(userId)
 
-        // get all users except the logged-in one
         const filteredUsers = await User.find({ _id: { $ne: userId } }).select("-password");
 
-        // get unseen messages for this user
         const allUnseen = await Message.find({
             receiverId: userId,
             seen: false,
         }).select("senderId");
 
-        // unseen count by sender
         const unseenMessages: Record<string, number> = {};
         allUnseen.forEach((msg) => {
             const senderId = msg.senderId.toString();

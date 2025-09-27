@@ -53,6 +53,7 @@ const Sidebar = () => {
     const fetchUsers = async () => {
       try {
         const res = await privateApi.get('/api/messages/users');
+        console.log(res)
         const realUsers: IUser[] = res.data.users;
         const unseen: Record<string, number> = res.data.unseenMessages || {};
 

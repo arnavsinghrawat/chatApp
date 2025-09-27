@@ -1,0 +1,24 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+
+@import "tailwindcss";
+
+/* For WebKit-based browsers (Chrome, Safari, Edge) */
+.transparent-scrollbar::-webkit-scrollbar {
+  width: 8px; /* Width of the scrollbar */
+}
+
+.transparent-scrollbar::-webkit-scrollbar-track {
+  background: transparent; /* Makes the track completely transparent */
+}
+
+.transparent-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(129, 133, 178, 0.4); /* Semi-transparent color for the thumb */
+  border-radius: 4px; /* Rounded corners */
+  border: 1px solid transparent; /* Prevents border from affecting transparency */
+}
+
+/* For Firefox */
+.transparent-scrollbar {
+  scrollbar-color: rgba(129, 133, 178, 0.4) transparent; /* thumb and track color */
+  scrollbar-width: thin; /* Can be 'auto', 'thin', or 'none' */
+}
