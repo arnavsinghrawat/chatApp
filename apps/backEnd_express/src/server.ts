@@ -76,15 +76,25 @@ io.on("connection", (socket: Socket<ClientToServerEvents, ServerToClientEvents, 
 
 app.use(express.json({ limit: '4mb' }));
 
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://quickchat-omega.vercel.app"
+];
+
 app.use(cors({
-  origin: [
-    "http://localhost:3000", 
-    "https://quickchat-omega.vercel.app" 
-  ],
-  methods: ["GET", "POST", "PUT", "DELETE"],
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
 }));
+
+app.options("*", cors());
 
 app.use("/api/status", (req: Request, res: Response) => {
   return res.send("server is live\n");
