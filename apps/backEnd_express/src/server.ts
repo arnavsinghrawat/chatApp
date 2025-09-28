@@ -77,7 +77,10 @@ io.on("connection", (socket: Socket<ClientToServerEvents, ServerToClientEvents, 
 app.use(express.json({ limit: '4mb' }));
 
 app.use(cors({
-  origin: "http://localhost:3000",
+  origin: [
+    "http://localhost:3000", 
+    "https://quickchat-omega.vercel.app" 
+  ],
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
