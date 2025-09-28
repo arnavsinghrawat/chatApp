@@ -3,12 +3,12 @@ import { useRouter } from "next/navigation";
 
 
 export const publicApi = axios.create({
-  baseURL: (process.env.NEXT_PUBLIC_BACKEND_URI as string) || 'http://localhost:3001',
+  baseURL: (process.env.NEXT_PUBLIC_BACKEND_URI as string),
   headers: { "Content-Type": "application/json" },
 });
 
 export const privateApi = axios.create({
-  baseURL: (process.env.NEXT_PUBLIC_BACKEND_URI as string) || 'http://localhost:3001',
+  baseURL: (process.env.NEXT_PUBLIC_BACKEND_URI as string),
   headers: { "Content-Type": "application/json" },
 });
 
